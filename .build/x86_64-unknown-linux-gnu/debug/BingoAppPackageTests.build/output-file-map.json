@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/home/runner/work/BingoApp/BingoApp/.build/x86_64-unknown-linux-gnu/debug/BingoAppPackageTests.build/master.swiftdeps"
+  },
+  "/home/runner/work/BingoApp/BingoApp/.build/x86_64-unknown-linux-gnu/debug/BingoAppPackageTests.derived/runner.swift": {
+    "dependencies": "/home/runner/work/BingoApp/BingoApp/.build/x86_64-unknown-linux-gnu/debug/BingoAppPackageTests.build/runner.d",
+    "object": "/home/runner/work/BingoApp/BingoApp/.build/x86_64-unknown-linux-gnu/debug/BingoAppPackageTests.build/runner.swift.o",
+    "swiftmodule": "/home/runner/work/BingoApp/BingoApp/.build/x86_64-unknown-linux-gnu/debug/BingoAppPackageTests.build/runner~partial.swiftmodule",
+    "swift-dependencies": "/home/runner/work/BingoApp/BingoApp/.build/x86_64-unknown-linux-gnu/debug/BingoAppPackageTests.build/runner.swiftdeps"
+  }
+}

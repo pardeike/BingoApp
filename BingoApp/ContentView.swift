@@ -3,7 +3,15 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var topicManager = TopicManager()
     @StateObject private var bingoCard = BingoCard()
+    @StateObject private var keyStore: OpenAIKeyStore
+    @StateObject private var translationService: TopicTranslationService
     @State private var showingTopicEditor = false
+    
+    init() {
+        let keyStore = OpenAIKeyStore()
+        _keyStore = StateObject(wrappedValue: keyStore)
+        _translationService = StateObject(wrappedValue: TopicTranslationService(keyStore: keyStore))
+    }
     
     var body: some View {
         NavigationStack {
@@ -17,6 +25,7 @@ struct ContentView: View {
                 }
                 
                 BingoCardView(bingoCard: bingoCard)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
                 VStack(spacing: 12) {
                     Button("New Game") {
@@ -44,7 +53,11 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showingTopicEditor) {
-                TopicEditorView(topicManager: topicManager) {
+                TopicEditorView(
+                    topicManager: topicManager,
+                    keyStore: keyStore,
+                    translationService: translationService
+                ) {
                     if !topicManager.topics.isEmpty && bingoCard.tiles.isEmpty {
                         generateNewCard()
                     }

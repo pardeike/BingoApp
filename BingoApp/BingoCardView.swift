@@ -2,11 +2,15 @@ import SwiftUI
 
 struct BingoCardView: View {
     @ObservedObject var bingoCard: BingoCard
+    private let spacing: CGFloat = 8
+    private let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: 8), count: 5)
     
     var body: some View {
-        VStack(spacing: 2) {
-            ForEach(0..<bingoCard.tiles.count, id: \.self) { row in
-                HStack(spacing: 2) {
+        GeometryReader { geometry in
+            let availableHeight = max(geometry.size.height - (spacing * 4), 340)
+            let tileHeight = availableHeight / 5
+            LazyVGrid(columns: columns, spacing: spacing) {
+                ForEach(0..<bingoCard.tiles.count, id: \.self) { row in
                     ForEach(0..<bingoCard.tiles[row].count, id: \.self) { col in
                         BingoTileView(
                             tile: bingoCard.tiles[row][col],
@@ -14,12 +18,16 @@ struct BingoCardView: View {
                                 bingoCard.toggleTile(at: row, col: col)
                             }
                         )
+                        .frame(height: tileHeight)
                     }
                 }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
+        .frame(maxWidth: .infinity, minHeight: 420)
+        .padding(12)
         .background(Color.gray.opacity(0.2))
-        .cornerRadius(8)
+        .cornerRadius(12)
     }
 }
 
@@ -29,28 +37,31 @@ struct BingoTileView: View {
     
     var body: some View {
         Button(action: onTap) {
-            ZStack {
+            ZStack(alignment: .topTrailing) {
                 Rectangle()
                     .fill(tile.isChecked ? Color.green.opacity(0.3) : Color.white)
                     .border(Color.gray, width: 1)
                 
-                Text(tile.topic.text)
-                    .font(.caption)
+                Text(tile.topic.displayText)
+                    .font(.caption2)
                     .fontWeight(.medium)
                     .foregroundColor(tile.isChecked ? .green : .primary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(3)
-                    .padding(4)
+                    .lineLimit(4)
+                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 10)
                 
                 if tile.isChecked {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
-                        .font(.title2)
+                        .font(.title3)
                         .background(Color.white.clipShape(Circle()))
+                        .padding(6)
                 }
             }
         }
-        .frame(width: 65, height: 65)
+        .frame(maxWidth: .infinity)
         .buttonStyle(PlainButtonStyle())
     }
 }
@@ -68,5 +79,6 @@ struct BingoTileView: View {
     bingoCard.generateCard(from: sampleTopics)
     
     return BingoCardView(bingoCard: bingoCard)
+        .frame(height: 440)
         .padding()
 }

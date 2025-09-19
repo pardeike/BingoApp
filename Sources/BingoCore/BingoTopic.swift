@@ -2,11 +2,22 @@ import Foundation
 
 /// Represents a single topic that can appear on a bingo card
 public struct BingoTopic: Identifiable, Codable, Hashable {
-    public let id = UUID()
-    public let text: String
+    public var id: UUID
+    public var text: String
+    public var shortText: String?
     
-    public init(text: String) {
+    public init(id: UUID = UUID(), text: String, shortText: String? = nil) {
+        self.id = id
         self.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let shortText {
+            self.shortText = shortText.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            self.shortText = nil
+        }
+    }
+    
+    public var displayText: String {
+        shortText?.isEmpty == false ? shortText! : text
     }
 }
 
@@ -22,11 +33,22 @@ public class TopicManager {
     public func addTopics(from text: String) {
         let newTopics = text
             .components(separatedBy: .newlines)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .map { sanitizeTopicText($0) }
             .filter { !$0.isEmpty }
             .map { BingoTopic(text: $0) }
         
         topics.append(contentsOf: newTopics)
+    }
+    
+    public func updateShortText(for topicID: UUID, shortText: String?) {
+        guard let index = topics.firstIndex(where: { $0.id == topicID }) else { return }
+        var updatedTopic = topics[index]
+        updatedTopic.shortText = shortText?.trimmingCharacters(in: .whitespacesAndNewlines)
+        topics[index] = updatedTopic
+    }
+    
+    public func replaceTopics(with newTopics: [BingoTopic]) {
+        topics = newTopics
     }
     
     /// Clear all topics
@@ -46,4 +68,13 @@ public class TopicManager {
         }
         return Array(topics.shuffled().prefix(count))
     }
+}
+
+private func sanitizeTopicText(_ rawText: String) -> String {
+    let trimmed = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return "" }
+    if trimmed.hasPrefix("- ") {
+        return String(trimmed.dropFirst(2)).trimmingCharacters(in: .whitespaces)
+    }
+    return trimmed
 }

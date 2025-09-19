@@ -86,7 +86,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1234567890ABCDEF019 /* Build configuration list for PBXNativeTarget "BingoApp" */;
 			buildPhases = (
-				A1234567890ABCDEF995 /* Sources */,
+				A1234567890ABCDEF993 /* Sources */,
 				A1234567890ABCDEF996 /* Frameworks */,
 				A1234567890ABCDEF997 /* Resources */,
 			);
@@ -145,7 +145,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A1234567890ABCDEF995 /* Sources */ = {
+		A1234567890ABCDEF993 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -231,7 +231,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;

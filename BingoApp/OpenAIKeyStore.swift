@@ -22,22 +22,25 @@ final class OpenAIKeyStore: ObservableObject {
         guard !trimmedKey.isEmpty else { return }
         let encodedKey = Data(trimmedKey.utf8)
         
-        let query: [String: Any] = [
+        let baseQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account
         ]
         
+        var addQuery = baseQuery
+        addQuery[kSecValueData as String] = encodedKey
+        
         let attributes: [String: Any] = [
             kSecValueData as String: encodedKey
         ]
         
-        let status = SecItemAdd(query as CFDictionary, nil)
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
         switch status {
         case errSecSuccess:
             hasSavedKey = true
         case errSecDuplicateItem:
-            let updateStatus = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+            let updateStatus = SecItemUpdate(baseQuery as CFDictionary, attributes as CFDictionary)
             if updateStatus == errSecSuccess {
                 hasSavedKey = true
             } else {

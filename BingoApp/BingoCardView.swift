@@ -2,67 +2,93 @@ import SwiftUI
 
 struct BingoCardView: View {
     @ObservedObject var bingoCard: BingoCard
+    @State private var infoTile: BingoTile?
     private let spacing: CGFloat = 8
     private let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: 8), count: 5)
     
     var body: some View {
         GeometryReader { geometry in
-            let availableHeight = max(geometry.size.height - (spacing * 4), 340)
+            let totalHorizontalSpacing = spacing * 4
+            let totalVerticalSpacing = spacing * 4
+            let availableWidth = max(geometry.size.width - totalHorizontalSpacing, 0)
+            let availableHeight = max(geometry.size.height - totalVerticalSpacing, 0)
+            let tileWidth = availableWidth / 5
             let tileHeight = availableHeight / 5
             LazyVGrid(columns: columns, spacing: spacing) {
-                ForEach(0..<bingoCard.tiles.count, id: \.self) { row in
-                    ForEach(0..<bingoCard.tiles[row].count, id: \.self) { col in
+                ForEach(Array(bingoCard.tiles.enumerated()), id: \.offset) { rowIndex, row in
+                    ForEach(Array(row.enumerated()), id: \.element.id) { colIndex, tile in
                         BingoTileView(
-                            tile: bingoCard.tiles[row][col],
+                            tile: tile,
                             onTap: {
-                                bingoCard.toggleTile(at: row, col: col)
+                                bingoCard.toggleTile(at: rowIndex, col: colIndex)
+                            },
+                            onLongPress: {
+                                infoTile = tile
                             }
                         )
-                        .frame(height: tileHeight)
+                        .frame(width: tileWidth, height: tileHeight)
                     }
                 }
             }
-            .frame(width: geometry.size.width, height: geometry.size.height)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
-        .frame(maxWidth: .infinity, minHeight: 420)
-        .padding(12)
-        .background(Color.gray.opacity(0.2))
-        .cornerRadius(12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .alert(item: $infoTile) { tile in
+            let short = tile.topic.shortText?.isEmpty == false ? tile.topic.shortText! : tile.topic.text
+            let messageText = tile.topic.shortText?.isEmpty == false ? tile.topic.text : nil
+            return Alert(
+                title: Text(short),
+                message: messageText.map(Text.init),
+                dismissButton: .default(Text("Close"))
+            )
+        }
     }
 }
 
 struct BingoTileView: View {
     let tile: BingoTile
     let onTap: () -> Void
-    
+    let onLongPress: () -> Void
+    @State private var suppressNextTap = false
+
+    private var tileShape: some Shape {
+        RoundedRectangle(cornerRadius: 12)
+    }
+
     var body: some View {
-        Button(action: onTap) {
-            ZStack(alignment: .topTrailing) {
-                Rectangle()
-                    .fill(tile.isChecked ? Color.green.opacity(0.3) : Color.white)
-                    .border(Color.gray, width: 1)
-                
-                Text(tile.topic.displayText)
-                    .font(.caption2)
-                    .fontWeight(.medium)
-                    .foregroundColor(tile.isChecked ? .green : .primary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(4)
-                    .minimumScaleFactor(0.7)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 10)
-                
-                if tile.isChecked {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                        .font(.title3)
-                        .background(Color.white.clipShape(Circle()))
-                        .padding(6)
-                }
+        Button {
+            if suppressNextTap {
+                suppressNextTap = false
+                return
             }
+            onTap()
+        } label: {
+            Text(tile.topic.displayText)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+                .lineLimit(4)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 12)
+                .background(
+                    tileShape.fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    tileShape
+                        .stroke(tile.isChecked ? Color.green : Color.gray.opacity(0.5), lineWidth: tile.isChecked ? 3 : 1)
+                )
+                .animation(.easeInOut(duration: 0.2), value: tile.isChecked)
         }
-        .frame(maxWidth: .infinity)
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(.plain)
+        .contentShape(tileShape)
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5).onEnded { _ in
+                suppressNextTap = true
+                onLongPress()
+            }
+        )
     }
 }
 

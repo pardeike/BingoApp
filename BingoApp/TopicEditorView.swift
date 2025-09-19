@@ -8,6 +8,7 @@ struct TopicEditorView: View {
     @State private var apiKeyInput: String = ""
     @State private var keySaveError: String?
     @State private var conversionMessage: String?
+    @State private var selectedLanguage: TopicLanguage = .english
     @Environment(\.dismiss) private var dismiss
     let onTopicsChanged: () -> Void
     
@@ -110,6 +111,13 @@ struct TopicEditorView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
+            Picker("Language", selection: $selectedLanguage) {
+                ForEach(TopicLanguage.allCases) { language in
+                    Text(language.displayName).tag(language)
+                }
+            }
+            .pickerStyle(.menu)
+            
             Button(action: convertTopics) {
                 if translationService.isConverting {
                     ProgressView()
@@ -184,11 +192,14 @@ struct TopicEditorView: View {
     private func convertTopics() {
         conversionMessage = nil
         Task {
-            let updatedTopics = await translationService.convertTopics(topicManager.topics)
+            let updatedTopics = await translationService.convertTopics(
+                topicManager.topics,
+                language: selectedLanguage
+            )
             topicManager.replaceTopics(with: updatedTopics)
             onTopicsChanged()
             if translationService.lastError == nil {
-                conversionMessage = "Updated short titles for \(updatedTopics.count) topics."
+                conversionMessage = "Updated short titles for \(updatedTopics.count) topics (\(selectedLanguage.displayName))."
             }
         }
     }

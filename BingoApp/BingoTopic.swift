@@ -27,11 +27,18 @@ public struct BingoTopic: Identifiable, Codable, Hashable {
 @Observable
 public class TopicManager: ObservableObject {
     public private(set) var topics: [BingoTopic] = []
-    
-    public init(topics: [BingoTopic] = []) {
-        self.topics = topics
+    private let persistence: TopicPersistence
+
+    public init(topics: [BingoTopic] = [], persistence: TopicPersistence = TopicPersistence()) {
+        self.persistence = persistence
+        if topics.isEmpty {
+            self.topics = persistence.loadTopics()
+        } else {
+            self.topics = topics
+            saveTopics()
+        }
     }
-    
+
     /// Add topics from a string where each line is a separate topic
     public func addTopics(from text: String) {
         let newTopics = text
@@ -39,8 +46,10 @@ public class TopicManager: ObservableObject {
             .map { sanitizeTopicText($0) }
             .filter { !$0.isEmpty }
             .map { BingoTopic(text: $0) }
-        
+
+        guard !newTopics.isEmpty else { return }
         topics.append(contentsOf: newTopics)
+        saveTopics()
     }
 
     /// Replace an existing topic's short text value.
@@ -49,21 +58,28 @@ public class TopicManager: ObservableObject {
         var updatedTopic = topics[index]
         updatedTopic.shortText = shortText?.trimmingCharacters(in: .whitespacesAndNewlines)
         topics[index] = updatedTopic
+        saveTopics()
     }
 
     /// Replace all topics at once (used after conversions).
     public func replaceTopics(with newTopics: [BingoTopic]) {
         topics = newTopics
+        saveTopics()
     }
-    
+
     /// Clear all topics
     public func clearTopics() {
         topics.removeAll()
+        saveTopics()
     }
-    
+
     /// Remove a specific topic
     public func removeTopic(_ topic: BingoTopic) {
+        let originalCount = topics.count
         topics.removeAll { $0.id == topic.id }
+        if topics.count != originalCount {
+            saveTopics()
+        }
     }
     
     /// Get a random selection of topics for the bingo card
@@ -72,6 +88,12 @@ public class TopicManager: ObservableObject {
             return topics
         }
         return Array(topics.shuffled().prefix(count))
+    }
+}
+
+private extension TopicManager {
+    func saveTopics() {
+        persistence.saveTopics(topics)
     }
 }
 

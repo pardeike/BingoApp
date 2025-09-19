@@ -6,6 +6,7 @@ struct ContentView: View {
     @StateObject private var keyStore: OpenAIKeyStore
     @StateObject private var translationService: TopicTranslationService
     @State private var showingTopicEditor = false
+    @State private var showingBingoDialog = false
     
     init() {
         let keyStore = OpenAIKeyStore()
@@ -15,43 +16,14 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                if bingoCard.hasWon {
-                    Text("🎉 BINGO! 🎉")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.green)
-                        .animation(.bouncy, value: bingoCard.hasWon)
-                }
-                
+            VStack(spacing: 16) {
+                topControls
                 BingoCardView(bingoCard: bingoCard)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                VStack(spacing: 12) {
-                    Button("New Game") {
-                        generateNewCard()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(topicManager.topics.isEmpty)
-                    
-                    Button("Reset Card") {
-                        bingoCard.resetCard()
-                    }
-                    .buttonStyle(.bordered)
-                    .disabled(topicManager.topics.isEmpty)
-                }
-                
-                Spacer()
             }
-            .padding()
-            .navigationTitle("Bingo")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Topics") {
-                        showingTopicEditor = true
-                    }
-                }
-            }
+            .padding(.horizontal)
+            .padding(.bottom)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .sheet(isPresented: $showingTopicEditor) {
                 TopicEditorView(
                     topicManager: topicManager,
@@ -64,52 +36,47 @@ struct ContentView: View {
                 }
             }
             .onAppear {
-                // Add some default topics if none exist
-                if topicManager.topics.isEmpty {
-                    addDefaultTopics()
+                if !topicManager.topics.isEmpty && bingoCard.tiles.isEmpty {
                     generateNewCard()
                 }
             }
+            .onChange(of: bingoCard.hasWon) { hasWonOld, hasWonNew in
+                if hasWonNew {
+                    showingBingoDialog = true
+                }
+            }
+            .alert("Bingo!", isPresented: $showingBingoDialog) {
+                Button("OK", role: .cancel) {
+                    showingBingoDialog = false
+                }
+                Button("New Game") {
+                    showingBingoDialog = false
+                    generateNewCard()
+                }
+            } message: {
+                Text("You completed a bingo. Nicely done!")
+            }
+            .toolbar(.hidden, for: .navigationBar)
         }
+    }
+    
+    private var topControls: some View {
+        HStack(spacing: 12) {
+            Spacer()
+            Button("New Game") {
+                generateNewCard()
+            }
+            .disabled(topicManager.topics.isEmpty)
+            Button("Configure Topics") {
+                showingTopicEditor = true
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(.top)
     }
     
     private func generateNewCard() {
         bingoCard.generateCard(from: topicManager.topics)
-    }
-    
-    private func addDefaultTopics() {
-        let defaultTopics = """
-        Read a book
-        Go for a walk
-        Cook a meal
-        Watch a movie
-        Call a friend
-        Exercise
-        Listen to music
-        Write in a journal
-        Learn something new
-        Take a photo
-        Clean the house
-        Play a game
-        Visit a museum
-        Try a new restaurant
-        Go to a concert
-        Plant something
-        Meditate
-        Paint or draw
-        Volunteer
-        Go hiking
-        Visit the beach
-        Try a new hobby
-        Organize a space
-        Have a picnic
-        Dance
-        Read the news
-        Practice gratitude
-        Take a nap
-        Go stargazing
-        Bake something
-        """
-        topicManager.addTopics(from: defaultTopics)
+        showingBingoDialog = false
     }
 }

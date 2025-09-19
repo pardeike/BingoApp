@@ -18,6 +18,7 @@
 		E1AF9D212E7DF53F00F949D6 /* BingoTopic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AF9D202E7DF53F00F949D6 /* BingoTopic.swift */; };
 		E1AF9D262E7DF59200F949D6 /* TopicTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AF9D242E7DF59200F949D6 /* TopicTranslationService.swift */; };
 		E1AF9D292E7DF5A100F949D6 /* OpenAIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AF9D282E7DF5A100F949D6 /* OpenAIKeyStore.swift */; };
+		E1AF9D2E2E7DF6C500F949D6 /* TopicPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AF9D2D2E7DF6C500F949D6 /* TopicPersistence.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		E1AF9D202E7DF53F00F949D6 /* BingoTopic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoTopic.swift; sourceTree = "<group>"; };
 		E1AF9D242E7DF59200F949D6 /* TopicTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicTranslationService.swift; sourceTree = "<group>"; };
 		E1AF9D282E7DF5A100F949D6 /* OpenAIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIKeyStore.swift; sourceTree = "<group>"; };
+		E1AF9D2D2E7DF6C500F949D6 /* TopicPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicPersistence.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 				A1234567890ABCDEF000 /* Main.swift */,
 				A1234567890ABCDEF002 /* ContentView.swift */,
 				E1AF9D202E7DF53F00F949D6 /* BingoTopic.swift */,
+				E1AF9D2D2E7DF6C500F949D6 /* TopicPersistence.swift */,
 				A1234567890ABCDEF006 /* BingoCard.swift */,
 				A1234567890ABCDEF008 /* BingoCardView.swift */,
 				A1234567890ABCDEF010 /* TopicEditorView.swift */,
@@ -167,6 +170,7 @@
 				E1AF9D292E7DF5A100F949D6 /* OpenAIKeyStore.swift in Sources */,
 				A1234567890ABCDEF007 /* BingoCard.swift in Sources */,
 				E1AF9D262E7DF59200F949D6 /* TopicTranslationService.swift in Sources */,
+				E1AF9D2E2E7DF6C500F949D6 /* TopicPersistence.swift in Sources */,
 				A1234567890ABCDEF009 /* BingoCardView.swift in Sources */,
 				A1234567890ABCDEF011 /* TopicEditorView.swift in Sources */,
 				E1AF9D212E7DF53F00F949D6 /* BingoTopic.swift in Sources */,

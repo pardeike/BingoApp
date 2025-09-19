@@ -1,23 +1,35 @@
 import Foundation
+import Observation
+#if canImport(Security)
 import Security
+#endif
 
 /// Persists the OpenAI API key in the user's keychain.
 @Observable
-final class OpenAIKeyStore: ObservableObject {
+public final class OpenAIKeyStore {
     private enum KeychainError: Error {
+        #if canImport(Security)
         case unexpectedStatus(OSStatus)
+        #else
+        case notSupported
+        #endif
     }
     
     private let service = "com.bingoapp.openai"
     private let account = "apiKey"
     
-    private(set) var hasSavedKey: Bool = false
+    public private(set) var hasSavedKey: Bool = false
     
-    init() {
+    public init() {
+        #if canImport(Security)
         hasSavedKey = (try? readKey())?.isEmpty == false
+        #else
+        hasSavedKey = false
+        #endif
     }
     
-    func save(key: String) throws {
+    public func save(key: String) throws {
+        #if canImport(Security)
         let trimmedKey = key.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedKey.isEmpty else { return }
         let encodedKey = Data(trimmedKey.utf8)
@@ -46,9 +58,15 @@ final class OpenAIKeyStore: ObservableObject {
         default:
             throw KeychainError.unexpectedStatus(status)
         }
+        #else
+        // On non-iOS platforms, we can't use keychain, so just track that we have a key
+        // but don't actually store it
+        hasSavedKey = !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        #endif
     }
     
     private func readKey() throws -> String? {
+        #if canImport(Security)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -70,9 +88,13 @@ final class OpenAIKeyStore: ObservableObject {
         default:
             throw KeychainError.unexpectedStatus(status)
         }
+        #else
+        // On non-iOS platforms, we can't read from keychain
+        return nil
+        #endif
     }
 
-    func currentKey() -> String? {
+    public func currentKey() -> String? {
         try? readKey()
     }
 }

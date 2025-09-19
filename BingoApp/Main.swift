@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct BingoAppApp: App {
+struct Main: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

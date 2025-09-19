@@ -1,5 +1,4 @@
 import SwiftUI
-import BingoCore
 
 struct ContentView: View {
     @StateObject private var topicManager = TopicManager()

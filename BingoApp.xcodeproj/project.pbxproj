@@ -7,27 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1234567890ABCDEF001 /* BingoAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF000 /* BingoAppApp.swift */; };
+		A1234567890ABCDEF001 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF000 /* Main.swift */; };
 		A1234567890ABCDEF003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF002 /* ContentView.swift */; };
-		A1234567890ABCDEF005 /* BingoTopic.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF004 /* BingoTopic.swift */; };
 		A1234567890ABCDEF007 /* BingoCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF006 /* BingoCard.swift */; };
 		A1234567890ABCDEF009 /* BingoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF008 /* BingoCardView.swift */; };
 		A1234567890ABCDEF011 /* TopicEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF010 /* TopicEditorView.swift */; };
 		A1234567890ABCDEF013 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF012 /* Assets.xcassets */; };
 		A1234567890ABCDEF016 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF015 /* Preview Assets.xcassets */; };
 		E1AF9D1D2E7DCBB000F949D6 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = E1AF9D1C2E7DCBB000F949D6 /* OpenAI */; };
+		E1AF9D212E7DF53F00F949D6 /* BingoTopic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AF9D202E7DF53F00F949D6 /* BingoTopic.swift */; };
+		E1AF9D262E7DF59200F949D6 /* TopicTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AF9D242E7DF59200F949D6 /* TopicTranslationService.swift */; };
+		E1AF9D292E7DF5A100F949D6 /* OpenAIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AF9D282E7DF5A100F949D6 /* OpenAIKeyStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A1234567890ABCDEF000 /* BingoAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoAppApp.swift; sourceTree = "<group>"; };
+		A1234567890ABCDEF000 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF004 /* BingoTopic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoTopic.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF006 /* BingoCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoCard.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF008 /* BingoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoCardView.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF010 /* TopicEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicEditorView.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1234567890ABCDEF015 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A1234567890ABCDEF999 /* BingoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BingoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1AF9D202E7DF53F00F949D6 /* BingoTopic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoTopic.swift; sourceTree = "<group>"; };
+		E1AF9D242E7DF59200F949D6 /* TopicTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicTranslationService.swift; sourceTree = "<group>"; };
+		E1AF9D282E7DF5A100F949D6 /* OpenAIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIKeyStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,12 +73,14 @@
 		A1234567890ABCDEF995 /* BingoApp */ = {
 			isa = PBXGroup;
 			children = (
-				A1234567890ABCDEF000 /* BingoAppApp.swift */,
+				A1234567890ABCDEF000 /* Main.swift */,
 				A1234567890ABCDEF002 /* ContentView.swift */,
-				A1234567890ABCDEF004 /* BingoTopic.swift */,
+				E1AF9D202E7DF53F00F949D6 /* BingoTopic.swift */,
 				A1234567890ABCDEF006 /* BingoCard.swift */,
 				A1234567890ABCDEF008 /* BingoCardView.swift */,
 				A1234567890ABCDEF010 /* TopicEditorView.swift */,
+				E1AF9D242E7DF59200F949D6 /* TopicTranslationService.swift */,
+				E1AF9D282E7DF5A100F949D6 /* OpenAIKeyStore.swift */,
 				A1234567890ABCDEF012 /* Assets.xcassets */,
 				A1234567890ABCDEF014 /* Preview Content */,
 			);
@@ -158,11 +164,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1234567890ABCDEF003 /* ContentView.swift in Sources */,
-				A1234567890ABCDEF005 /* BingoTopic.swift in Sources */,
+				E1AF9D292E7DF5A100F949D6 /* OpenAIKeyStore.swift in Sources */,
 				A1234567890ABCDEF007 /* BingoCard.swift in Sources */,
+				E1AF9D262E7DF59200F949D6 /* TopicTranslationService.swift in Sources */,
 				A1234567890ABCDEF009 /* BingoCardView.swift in Sources */,
 				A1234567890ABCDEF011 /* TopicEditorView.swift in Sources */,
-				A1234567890ABCDEF001 /* BingoAppApp.swift in Sources */,
+				E1AF9D212E7DF53F00F949D6 /* BingoTopic.swift in Sources */,
+				A1234567890ABCDEF001 /* Main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

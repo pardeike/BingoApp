@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 
 /// Represents a single topic that can appear on a bingo card
 public struct BingoTopic: Identifiable, Codable, Hashable {

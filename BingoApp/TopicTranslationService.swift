@@ -1,14 +1,15 @@
 import Foundation
+import Observation
 import OpenAI
 
 @Observable
 @MainActor
-final class TopicTranslationService: ObservableObject {
-    enum TranslationError: LocalizedError {
+public final class TopicTranslationService: ObservableObject {
+    public enum TranslationError: LocalizedError {
         case missingAPIKey
         case unsupported
 
-        var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .missingAPIKey:
                 return "Please add your OpenAI API key before converting topics."
@@ -20,15 +21,15 @@ final class TopicTranslationService: ObservableObject {
     
     private let keyStore: OpenAIKeyStore
     private var client: OpenAI?
-    private(set) var isConverting: Bool = false
-    private(set) var lastError: Error?
+    public private(set) var isConverting: Bool = false
+    public private(set) var lastError: Error?
     
     init(keyStore: OpenAIKeyStore) {
         self.keyStore = keyStore
         rebuildClient()
     }
     
-    func rebuildClient() {
+    public func rebuildClient() {
         if let token = keyStore.currentKey(), !token.isEmpty {
             client = OpenAI(apiToken: token)
         } else {
@@ -36,7 +37,7 @@ final class TopicTranslationService: ObservableObject {
         }
     }
     
-    func convertTopics(_ topics: [BingoTopic]) async -> [BingoTopic] {
+    public func convertTopics(_ topics: [BingoTopic]) async -> [BingoTopic] {
         guard let client else {
             lastError = TranslationError.missingAPIKey
             return topics

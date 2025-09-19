@@ -9,7 +9,25 @@ A SwiftUI iOS app that generates random 5x5 bingo cards from custom topics. User
 - ✅ **Interactive Tiles**: Tap tiles to check them off as you complete activities
 - 🏆 **Win Detection**: Automatically detects when you get 4 in a row (horizontal, vertical, or diagonal)
 - 🔄 **New Game Function**: Generate fresh random cards anytime
+- 🤖 **AI Topic Shortening**: Use OpenAI to automatically shorten long topics into concise 2-3 word phrases
+- 🔐 **Secure API Key Storage**: OpenAI API keys are stored securely in the iOS keychain
 - 📱 **Modern iOS Interface**: Built with SwiftUI for iOS 16+
+
+## OpenAI Integration
+
+The app includes optional OpenAI integration to automatically shorten long topic descriptions into concise, bingo-friendly phrases:
+
+### How it works:
+1. Add your OpenAI API key in the topic editor
+2. Enter your topics (can be long descriptions)
+3. Tap "Convert Topics to Short Titles"
+4. AI will convert topics like "Read a really long book about history" → "Read Book"
+
+### API Key Setup:
+- Get an API key from [OpenAI](https://platform.openai.com/api-keys)
+- In the app, go to Topics → paste your API key → Save
+- Your key is stored securely in the iOS keychain
+- Uses GPT-3.5-turbo for cost-effective topic shortening
 
 ## Demo
 

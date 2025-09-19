@@ -16,8 +16,15 @@ public struct BingoTile: Identifiable, Codable {
 public class BingoCard: ObservableObject {
     public private(set) var tiles: [[BingoTile]] = []
     public private(set) var hasWon: Bool = false
+    private let persistence: BingoCardPersistence
     
-    public init() {}
+    public init(persistence: BingoCardPersistence = BingoCardPersistence()) {
+        self.persistence = persistence
+        if let savedState = persistence.loadCard() {
+            tiles = savedState.tiles
+            hasWon = savedState.hasWon
+        }
+    }
     
     /// Generate a new 5x5 bingo card from the provided topics
     public func generateCard(from topics: [BingoTopic]) {
@@ -43,6 +50,7 @@ public class BingoCard: ObservableObject {
         }
         
         hasWon = false
+        persistState()
     }
     
     /// Toggle the checked state of a tile
@@ -50,6 +58,7 @@ public class BingoCard: ObservableObject {
         guard row >= 0, row < 5, col >= 0, col < 5 else { return }
         tiles[row][col].isChecked.toggle()
         checkForWin()
+        persistState()
     }
     
     /// Check if the player has achieved a bingo (4 in a row)
@@ -116,5 +125,15 @@ public class BingoCard: ObservableObject {
             }
         }
         hasWon = false
+        persistState()
+    }
+
+    private func persistState() {
+        guard !tiles.isEmpty else {
+            persistence.saveCard(nil)
+            return
+        }
+        let state = BingoCardState(tiles: tiles, hasWon: hasWon)
+        persistence.saveCard(state)
     }
 }

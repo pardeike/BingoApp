@@ -7,7 +7,7 @@ struct TopicEditorView: View {
     @State private var topicText: String = ""
     @State private var apiKeyInput: String = ""
     @State private var keySaveError: String?
-    @State private var conversionMessage: String?
+    @State private var statusMessage: String?
     @State private var showClearAllConfirmation = false
     @AppStorage("TopicEditorView.selectedLanguage") private var selectedLanguageRawValue: String = TopicLanguage.english.rawValue
     @Environment(\.dismiss) private var dismiss
@@ -35,12 +35,30 @@ struct TopicEditorView: View {
                         .border(Color.gray, width: 1)
                         .frame(minHeight: 200)
                     
-                    Button(action: addTopicsIfNeeded) {
-                        Text("Add Topics")
-                            .frame(maxWidth: .infinity)
+                    HStack(spacing: 12) {
+                        Button(action: addTopicsIfNeeded) {
+                            Text("Add Topics")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(topicText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || translationService.isGenerating)
+
+                        Button(action: generateTopicsWithAI) {
+                            if translationService.isGenerating {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                            } else {
+                                Text("Generate Topics")
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(
+                            topicText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                            translationService.isGenerating ||
+                            translationService.isConverting
+                        )
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(topicText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     
                     Divider()
                     
@@ -148,10 +166,10 @@ struct TopicEditorView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
-            .disabled(topicManager.topics.isEmpty || translationService.isConverting)
+            .disabled(topicManager.topics.isEmpty || translationService.isConverting || translationService.isGenerating)
             
-            if let conversionMessage {
-                Text(conversionMessage)
+            if let statusMessage {
+                Text(statusMessage)
                     .font(.footnote)
                     .foregroundColor(.secondary)
             }
@@ -210,11 +228,11 @@ struct TopicEditorView: View {
         topicManager.addTopics(from: trimmed)
         topicText = ""
         onTopicsChanged()
-        conversionMessage = nil
+        statusMessage = nil
     }
-    
+
     private func convertTopics() {
-        conversionMessage = nil
+        statusMessage = nil
         Task {
             let updatedTopics = await translationService.convertTopics(
                 topicManager.topics,
@@ -223,7 +241,38 @@ struct TopicEditorView: View {
             topicManager.replaceTopics(with: updatedTopics)
             onTopicsChanged()
             if translationService.lastError == nil {
-                conversionMessage = "Updated short titles for \(updatedTopics.count) topics (\(selectedLanguage.displayName))."
+                statusMessage = "Updated short titles for \(updatedTopics.count) topics (\(selectedLanguage.displayName))."
+            }
+        }
+    }
+
+    private func generateTopicsWithAI() {
+        statusMessage = nil
+        let prompt = topicText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !prompt.isEmpty else { return }
+
+        Task { @MainActor in
+            let generated = await translationService.generateTopics(
+                from: prompt,
+                language: selectedLanguage
+            )
+
+            guard translationService.lastError == nil else { return }
+
+            guard !generated.isEmpty else {
+                statusMessage = "No topics were generated."
+                return
+            }
+
+            let beforeCount = topicManager.topics.count
+            let generatedText = generated.map { $0.text }.joined(separator: "\n")
+            topicManager.addTopics(from: generatedText)
+            let addedCount = topicManager.topics.count - beforeCount
+            onTopicsChanged()
+            if addedCount > 0 {
+                statusMessage = "Added \(addedCount) AI topics (\(selectedLanguage.displayName))."
+            } else {
+                statusMessage = "No new topics were added."
             }
         }
     }

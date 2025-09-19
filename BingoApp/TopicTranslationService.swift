@@ -34,6 +34,23 @@ public enum TopicLanguage: String, CaseIterable, Identifiable {
         }
     }
 
+    private func generationInstructions(desiredCount: Int) -> String {
+        switch self {
+        case .english:
+            """
+            You create themed bingo topics written in natural \(displayName). Return a JSON object matching the schema {"topics": ["..."]} with exactly \(desiredCount) unique entries. Each entry should be a short 3-5 word phrase that fits on a bingo tile, contains no numbering or punctuation, and follows the requested theme.
+            """
+        case .german:
+            """
+            Du erstellst thematische Bingo-Begriffe auf \(displayName). Gib ein JSON-Objekt gemäß Schema {"topics": ["..."]} mit genau \(desiredCount) eindeutigen Einträgen zurück. Jeder Eintrag soll eine kurze Phrase aus 3-5 Wörtern sein, ohne Nummerierung oder Satzzeichen, und zum gewünschten Thema passen.
+            """
+        case .swedish:
+            """
+            Du skapar tematiska bingofraser på \(displayName). Svara med ett JSON-objekt enligt schemat {"topics": ["..."]} med exakt \(desiredCount) unika fraser. Varje fras ska bestå av 3-5 ord, sakna nummer och skiljetecken och följa det önskade temat.
+            """
+        }
+    }
+
     fileprivate func prompt(for topics: [BingoTopic]) -> String {
         let expectedCount = topics.count
         let topicsBlock = topics
@@ -44,6 +61,15 @@ public enum TopicLanguage: String, CaseIterable, Identifiable {
 
         Long topics (keep order and meaning):
         \(topicsBlock)
+        """
+    }
+
+    fileprivate func generationPrompt(userPrompt: String, desiredCount: Int) -> String {
+        """
+        \(generationInstructions(desiredCount: desiredCount))
+
+        Theme guidance from the user:
+        \(userPrompt)
         """
     }
 }
@@ -58,9 +84,9 @@ public final class TopicTranslationService: ObservableObject {
         public var errorDescription: String? {
             switch self {
             case .missingAPIKey:
-                return "Please add your OpenAI API key before converting topics."
+                return "Please add your OpenAI API key before using AI features."
             case .unsupported:
-                return "Unable to generate a short topic at this time."
+                return "Unable to complete the AI request at this time."
             }
         }
     }
@@ -68,6 +94,7 @@ public final class TopicTranslationService: ObservableObject {
     private let keyStore: OpenAIKeyStore
     private var client: OpenAI?
     public private(set) var isConverting: Bool = false
+    public private(set) var isGenerating: Bool = false
     public private(set) var lastError: Error?
 
     init(keyStore: OpenAIKeyStore) {
@@ -100,6 +127,34 @@ public final class TopicTranslationService: ObservableObject {
         } catch {
             lastError = error
             return topics
+        }
+    }
+
+    public func generateTopics(from prompt: String, language: TopicLanguage, desiredCount: Int = 60) async -> [BingoTopic] {
+        let trimmedPrompt = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedPrompt.isEmpty else {
+            return []
+        }
+        guard let client else {
+            lastError = TranslationError.missingAPIKey
+            return []
+        }
+
+        isGenerating = true
+        defer { isGenerating = false }
+        lastError = nil
+
+        do {
+            let topics = try await generateTopics(
+                prompt: trimmedPrompt,
+                language: language,
+                desiredCount: desiredCount,
+                client: client
+            )
+            return topics.map { BingoTopic(text: $0) }
+        } catch {
+            lastError = error
+            return []
         }
     }
 
@@ -166,6 +221,63 @@ public final class TopicTranslationService: ObservableObject {
             topic.shortText = short
             return topic
         }
+    }
+
+    private func generateTopics(
+        prompt: String,
+        language: TopicLanguage,
+        desiredCount: Int,
+        client: OpenAI
+    ) async throws -> [String] {
+        let userPrompt = language.generationPrompt(userPrompt: prompt, desiredCount: desiredCount)
+
+        let topicsSchema = JSONSchema.schema(
+            .type(.object),
+            .properties([
+                "topics": JSONSchema.schema(
+                    .type(.array),
+                    .items(
+                        JSONSchema.schema(
+                            .type(.string),
+                            .minLength(1),
+                            .maxLength(80)
+                        )
+                    ),
+                    .minItems(desiredCount),
+                    .maxItems(desiredCount)
+                )
+            ]),
+            .required(["topics"]),
+            .additionalProperties(.boolean(false))
+        )
+
+        let responseFormat = ChatQuery.ResponseFormat.jsonSchema(
+            .init(
+                name: "generatedtopics",
+                description: "Generated bingo topics in \(language.displayName)",
+                schema: .jsonSchema(topicsSchema),
+                strict: true
+            )
+        )
+
+        let systemMessage = ChatQuery.ChatCompletionMessageParam.system(
+            .init(content: .textContent("You reply with JSON that matches the provided schema."))
+        )
+        let userMessage = ChatQuery.ChatCompletionMessageParam.user(.init(content: .string(userPrompt)))
+
+        let query = ChatQuery(
+            messages: [systemMessage, userMessage],
+            model: .gpt5,
+            responseFormat: responseFormat
+        )
+
+        let response = try await client.chats(query: query)
+        guard let choice = response.choices.first,
+              let content = choice.message.content else {
+            throw TranslationError.unsupported
+        }
+
+        return try decodeStructuredTopics(from: content, expectedCount: desiredCount)
     }
 
     private func decodeStructuredTopics(from content: String, expectedCount: Int) throws -> [String] {

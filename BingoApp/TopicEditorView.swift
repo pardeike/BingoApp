@@ -1,4 +1,5 @@
 import SwiftUI
+import BingoCore
 
 struct TopicEditorView: View {
     @ObservedObject var topicManager: TopicManager

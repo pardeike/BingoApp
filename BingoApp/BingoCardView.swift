@@ -1,4 +1,5 @@
 import SwiftUI
+import BingoCore
 
 struct BingoCardView: View {
     @ObservedObject var bingoCard: BingoCard

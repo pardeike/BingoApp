@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 
 /// Represents a single topic that can appear on a bingo card
 public struct BingoTopic: Identifiable, Codable, Hashable {
@@ -16,12 +17,14 @@ public struct BingoTopic: Identifiable, Codable, Hashable {
         }
     }
     
+    /// Returns the best available display text for the topic.
     public var displayText: String {
         shortText?.isEmpty == false ? shortText! : text
     }
 }
 
 /// Manages the collection of available bingo topics
+@Observable
 public class TopicManager {
     public private(set) var topics: [BingoTopic] = []
     
@@ -39,14 +42,16 @@ public class TopicManager {
         
         topics.append(contentsOf: newTopics)
     }
-    
+
+    /// Replace an existing topic's short text value.
     public func updateShortText(for topicID: UUID, shortText: String?) {
         guard let index = topics.firstIndex(where: { $0.id == topicID }) else { return }
         var updatedTopic = topics[index]
         updatedTopic.shortText = shortText?.trimmingCharacters(in: .whitespacesAndNewlines)
         topics[index] = updatedTopic
     }
-    
+
+    /// Replace all topics at once (used after conversions).
     public func replaceTopics(with newTopics: [BingoTopic]) {
         topics = newTopics
     }

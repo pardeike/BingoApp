@@ -2,7 +2,7 @@ import Foundation
 
 /// Represents a single tile on the bingo card
 public struct BingoTile: Identifiable, Codable {
-    public let id = UUID()
+    public var id = UUID()
     public let topic: BingoTopic
     public var isChecked: Bool = false
     
@@ -13,7 +13,7 @@ public struct BingoTile: Identifiable, Codable {
 
 /// Represents a 5x5 bingo card
 @Observable
-public class BingoCard {
+public class BingoCard: ObservableObject {
     public private(set) var tiles: [[BingoTile]] = []
     public private(set) var hasWon: Bool = false
     
@@ -26,7 +26,7 @@ public class BingoCard {
             let repeatedTopics = Array(repeating: topics, count: (25 / max(topics.count, 1)) + 1)
                 .flatMap { $0 }
                 .prefix(25)
-            generateCard(from Array(repeatedTopics))
+            generateCard(from: Array(repeatedTopics))
             return
         }
         

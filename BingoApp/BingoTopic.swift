@@ -2,7 +2,7 @@ import Foundation
 
 /// Represents a single topic that can appear on a bingo card
 public struct BingoTopic: Identifiable, Codable, Hashable {
-    public let id = UUID()
+    public var id = UUID()
     public let text: String
     
     public init(text: String) {
@@ -12,7 +12,7 @@ public struct BingoTopic: Identifiable, Codable, Hashable {
 
 /// Manages the collection of available bingo topics
 @Observable
-public class TopicManager {
+public class TopicManager: ObservableObject {
     public private(set) var topics: [BingoTopic] = []
     
     public init(topics: [BingoTopic] = []) {

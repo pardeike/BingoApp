@@ -8,9 +8,21 @@ struct TopicEditorView: View {
     @State private var apiKeyInput: String = ""
     @State private var keySaveError: String?
     @State private var conversionMessage: String?
-    @State private var selectedLanguage: TopicLanguage = .english
+    @State private var showClearAllConfirmation = false
+    @AppStorage("TopicEditorView.selectedLanguage") private var selectedLanguageRawValue: String = TopicLanguage.english.rawValue
     @Environment(\.dismiss) private var dismiss
     let onTopicsChanged: () -> Void
+
+    private var selectedLanguageBinding: Binding<TopicLanguage> {
+        Binding(
+            get: { selectedLanguage },
+            set: { selectedLanguageRawValue = $0.rawValue }
+        )
+    }
+
+    private var selectedLanguage: TopicLanguage {
+        TopicLanguage(rawValue: selectedLanguageRawValue) ?? .english
+    }
     
     var body: some View {
         NavigationStack {
@@ -49,8 +61,7 @@ struct TopicEditorView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Clear All") {
-                        topicManager.clearTopics()
-                        onTopicsChanged()
+                        showClearAllConfirmation = true
                     }
                     .foregroundColor(.red)
                     .disabled(topicManager.topics.isEmpty)
@@ -63,6 +74,15 @@ struct TopicEditorView: View {
                     }
                 }
             }
+        }
+        .alert("Clear all topics?", isPresented: $showClearAllConfirmation) {
+            Button("Clear All", role: .destructive) {
+                topicManager.clearTopics()
+                onTopicsChanged()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will remove every topic in the list.")
         }
     }
     
@@ -111,7 +131,7 @@ struct TopicEditorView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
-            Picker("Language", selection: $selectedLanguage) {
+            Picker("Language", selection: selectedLanguageBinding) {
                 ForEach(TopicLanguage.allCases) { language in
                     Text(language.displayName).tag(language)
                 }
@@ -160,22 +180,26 @@ struct TopicEditorView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
             
-            Button("Save API Key") {
-                saveAPIKey()
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            
-            if let keySaveError {
-                Text(keySaveError)
-                    .font(.footnote)
-                    .foregroundColor(.red)
-            }
-            
-            if keyStore.hasSavedKey {
-                Text("API key saved.")
-                    .font(.footnote)
-                    .foregroundColor(.green)
+            HStack(spacing: 12) {
+                Button("Save API Key") {
+                    saveAPIKey()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                
+                Spacer()
+                
+                if let keySaveError {
+                    Text(keySaveError)
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                }
+                
+                if keyStore.hasSavedKey {
+                    Text("API key saved.")
+                        .font(.footnote)
+                        .foregroundColor(.green)
+                }
             }
         }
     }

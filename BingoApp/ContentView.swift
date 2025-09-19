@@ -7,6 +7,7 @@ struct ContentView: View {
     @StateObject private var translationService: TopicTranslationService
     @State private var showingTopicEditor = false
     @State private var showingBingoDialog = false
+    @State private var isConfirmingNewGame = false
     
     init() {
         let keyStore = OpenAIKeyStore()
@@ -64,7 +65,7 @@ struct ContentView: View {
         HStack(spacing: 12) {
             Spacer()
             Button("New Game") {
-                generateNewCard()
+                isConfirmingNewGame = true
             }
             .disabled(topicManager.topics.isEmpty)
             Button("Configure Topics") {
@@ -73,6 +74,16 @@ struct ContentView: View {
             .buttonStyle(.bordered)
         }
         .padding(.top)
+        .confirmationDialog(
+            "Start a new game?",
+            isPresented: $isConfirmingNewGame,
+            titleVisibility: .visible
+        ) {
+            Button("Start New Game", role: .destructive) {
+                generateNewCard()
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
     
     private func generateNewCard() {

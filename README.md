@@ -4,87 +4,86 @@ A SwiftUI iOS app that generates random 5x5 bingo cards from custom topics. User
 
 ## Features
 
-- 📝 **Custom Topic Management**: Submit and manage your own list of topics (one per line)
-- 🎯 **5x5 Bingo Card Generation**: Creates random bingo cards from your topic list
+- 📝 **Custom Topic Management**: Add and manage your own bingo topics
+- 🎯 **5x5 Bingo Card Generation**: Creates random bingo cards from your topics
 - ✅ **Interactive Tiles**: Tap tiles to check them off as you complete activities
 - 🏆 **Win Detection**: Automatically detects when you get 4 in a row (horizontal, vertical, or diagonal)
 - 🔄 **New Game Function**: Generate fresh random cards anytime
-- 🤖 **AI Topic Shortening**: Use OpenAI to automatically shorten long topics into concise 2-3 word phrases
+- 🤖 **AI Topic Generation**: Use OpenAI to generate topic lists from descriptions
+- 🔤 **AI Topic Shortening**: Automatically shorten long topics into concise phrases
+- 🌍 **Multi-language Support**: AI features support English, German, and Swedish
 - 🔐 **Secure API Key Storage**: OpenAI API keys are stored securely in the iOS keychain
+- 💾 **Data Persistence**: Topics and game state are automatically saved
 - 📱 **Modern iOS Interface**: Built with SwiftUI for iOS 16+
 
 ## OpenAI Integration
 
-The app includes optional OpenAI integration to automatically shorten long topic descriptions into concise, bingo-friendly phrases:
+The app includes optional OpenAI integration for two main features:
 
-### How it works:
+### AI Topic Generation
+Generate bingo topics automatically using AI:
+1. In the topic editor, enter a description of what kind of topics you want
+2. Tap **"Generate Topics"** 
+3. AI will create a list of relevant bingo topics for you
+
+### AI Topic Shortening  
+Automatically shorten long topic descriptions into concise bingo-friendly phrases:
 1. Add your OpenAI API key in the topic editor
 2. Enter your topics (can be long descriptions)
-3. Tap "Convert Topics to Short Titles"
-4. AI will convert topics like "Read a really long book about history" → "Read Book"
+3. Select your preferred language (English, German, or Swedish)
+4. Tap **"Convert Topics to Short Titles"**
+5. AI will convert topics like "Read a really long book about history" → "Read Book"
 
 ### API Key Setup:
 - Get an API key from [OpenAI](https://platform.openai.com/api-keys)
-- In the app, go to Topics → paste your API key → Save
+- In the app, go to Configure Topics → paste your API key → Save
 - Your key is stored securely in the iOS keychain
-- Uses GPT-3.5-turbo for cost-effective topic shortening
+- Uses GPT-3.5-turbo for cost-effective processing
 
 ## Demo
 
-Run the included demo to see the functionality in action:
+The repository includes a console demo script that demonstrates the core functionality:
 
 ```bash
 swift Demo.swift
 ```
 
-This will show you:
-- Topic management (adding 30 sample topics)
-- Random 5x5 bingo card generation
-- Interactive tile checking
-- Win detection when you get 4 in a row
+The demo will:
+- Load 30 sample topics
+- Generate a random 5x5 bingo card
+- Display the card in ASCII format
+- Simulate checking off tiles to demonstrate win detection
+- Show a winning scenario with 4 in a row
 
 ## Project Structure
 
 ```
 BingoApp/
-├── Package.swift                    # Swift Package Manager configuration
-├── Demo.swift                       # Console demo script
 ├── BingoApp.xcodeproj/             # Xcode project file
 ├── BingoApp/                       # iOS SwiftUI App
-│   ├── BingoAppApp.swift           # App entry point
+│   ├── Main.swift                  # App entry point
 │   ├── ContentView.swift           # Main app interface
 │   ├── BingoCardView.swift         # 5x5 bingo card display
 │   ├── TopicEditorView.swift       # Topic management interface
-│   ├── BingoTopic.swift            # Topic data model
+│   ├── BingoTopic.swift            # Topic data model and manager
 │   ├── BingoCard.swift             # Bingo card logic
+│   ├── TopicTranslationService.swift # AI topic generation/translation
+│   ├── OpenAIKeyStore.swift        # Secure API key storage
+│   ├── TopicPersistence.swift      # Topic data persistence
+│   ├── BingoCardPersistence.swift  # Game state persistence
 │   └── Assets.xcassets/            # App icons and assets
-├── Sources/BingoCore/              # Core Swift Package
-│   ├── BingoTopic.swift            # Topic management logic
-│   └── BingoCard.swift             # Bingo card and win detection
-└── Tests/BingoCoreTests/           # Unit tests
-    └── BingoCoreTests.swift        # Core functionality tests
+├── Demo.swift                      # Console demo script
+└── Package.swift                   # Dependency management configuration
 ```
 
 ## Core Components
 
-### TopicManager
-Manages the collection of bingo topics:
-- Add topics from multi-line text (one topic per line)
-- Clear all topics
-- Remove individual topics
-- Get random selection for bingo cards
+The app is built with SwiftUI and uses the following key components:
 
-### BingoCard
-Handles the 5x5 bingo card logic:
-- Generate random cards from available topics
-- Toggle tile checked state
-- Detect wins (4 consecutive tiles in any direction)
-- Reset cards for new games
-
-### SwiftUI Views
-- **ContentView**: Main app with navigation and game controls
-- **BingoCardView**: Interactive 5x5 grid display
-- **TopicEditorView**: Interface for adding/managing topics
+- **TopicManager**: Manages the collection of bingo topics with persistence
+- **BingoCard**: Handles 5x5 bingo card logic and win detection  
+- **TopicTranslationService**: Provides AI-powered topic generation and multi-language support
+- **OpenAIKeyStore**: Securely stores OpenAI API keys in the iOS keychain
 
 ## Usage
 
@@ -92,53 +91,20 @@ Handles the 5x5 bingo card logic:
 1. Open `BingoApp.xcodeproj` in Xcode
 2. Build and run on iOS Simulator or device (iOS 16+ required)
 3. The app starts with 30 sample topics pre-loaded
-4. Tap **"Topics"** to add your own topics:
+4. Tap **"Configure Topics"** to add your own topics:
    - Enter one topic per line in the text editor
+   - Use **"Generate Topics"** to create topics with AI assistance
+   - Use **"Convert Topics to Short Titles"** to shorten existing topics
    - View current topics in the list below
    - Delete individual topics if needed
    - Tap **"Done"** to save changes
 5. Tap **"New Game"** to generate a fresh random 5x5 bingo card
 6. Tap tiles to check off completed activities
 7. Get 4 in a row (horizontal, vertical, or diagonal) to win! 🎉
-8. Use **"Reset Card"** to uncheck all tiles without generating new topics
-
-### Swift Package
-The core functionality is also available as a Swift Package:
-
-```swift
-import BingoCore
-
-let topicManager = TopicManager()
-topicManager.addTopics(from: "Topic 1\nTopic 2\nTopic 3")
-
-let bingoCard = BingoCard()
-bingoCard.generateCard(from: topicManager.topics)
-
-// Check a tile
-bingoCard.toggleTile(at: 0, col: 0)
-
-// Check if won
-if bingoCard.hasWon {
-    print("Bingo! You won!")
-}
-```
-
-## Testing
-
-Run the unit tests to verify functionality:
-
-```bash
-swift test
-```
-
-All tests should pass, covering:
-- Topic creation and management
-- Bingo card generation
-- Win condition detection
 
 ## Example Topics
 
-The app comes with 30 sample topics including:
+The app comes pre-loaded with 30 sample topics to get you started, including activities like:
 - Read a book
 - Go for a walk
 - Cook a meal
@@ -150,6 +116,8 @@ The app comes with 30 sample topics including:
 - Try a new restaurant
 - Go hiking
 - And 20 more...
+
+These topics are automatically loaded when you first open the app, but you can replace them with your own custom topics at any time.
 
 ## Win Conditions
 

@@ -4,20 +4,22 @@ import Foundation
 
 // Copy the core functionality here for demo
 struct BingoTopic: Identifiable, Codable, Hashable {
-    let id = UUID()
+    let id: UUID
     let text: String
     
     init(text: String) {
+        self.id = UUID()
         self.text = text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
 struct BingoTile: Identifiable, Codable {
-    let id = UUID()
+    let id: UUID
     let topic: BingoTopic
     var isChecked: Bool = false
     
     init(topic: BingoTopic) {
+        self.id = UUID()
         self.topic = topic
     }
 }

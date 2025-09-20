@@ -73,7 +73,7 @@ BingoApp/
 │   ├── BingoCardPersistence.swift  # Game state persistence
 │   └── Assets.xcassets/            # App icons and assets
 ├── Demo.swift                      # Console demo script
-└── Package.swift                   # Swift Package Manager configuration
+└── Package.swift                   # Dependency management configuration
 ```
 
 ## Core Components

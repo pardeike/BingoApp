@@ -102,23 +102,6 @@ The app is built with SwiftUI and uses the following key components:
 6. Tap tiles to check off completed activities
 7. Get 4 in a row (horizontal, vertical, or diagonal) to win! 🎉
 
-## Example Topics
-
-Here are 30 sample topics that you can use to get started with the app, including activities like:
-- Read a book
-- Go for a walk
-- Cook a meal
-- Watch a movie
-- Call a friend
-- Exercise
-- Listen to music
-- Learn something new
-- Try a new restaurant
-- Go hiking
-- And 20 more...
-
-These topics can be added to your app by copying and pasting them into the topic editor, but you can replace them with your own custom topics at any time.
-
 ## Win Conditions
 
 You win by getting **4 consecutive checked tiles** in any of these patterns:

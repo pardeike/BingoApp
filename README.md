@@ -90,7 +90,7 @@ The app is built with SwiftUI and uses the following key components:
 ### iOS App
 1. Open `BingoApp.xcodeproj` in Xcode
 2. Build and run on iOS Simulator or device (iOS 16+ required)
-3. The app starts with 30 sample topics pre-loaded
+3. The app starts with an empty topic list - you'll need to add your own topics
 4. Tap **"Configure Topics"** to add your own topics:
    - Enter one topic per line in the text editor
    - Use **"Generate Topics"** to create topics with AI assistance
@@ -104,7 +104,7 @@ The app is built with SwiftUI and uses the following key components:
 
 ## Example Topics
 
-The app comes pre-loaded with 30 sample topics to get you started, including activities like:
+Here are 30 sample topics that you can use to get started with the app, including activities like:
 - Read a book
 - Go for a walk
 - Cook a meal
@@ -117,7 +117,7 @@ The app comes pre-loaded with 30 sample topics to get you started, including act
 - Go hiking
 - And 20 more...
 
-These topics are automatically loaded when you first open the app, but you can replace them with your own custom topics at any time.
+These topics can be added to your app by copying and pasting them into the topic editor, but you can replace them with your own custom topics at any time.
 
 ## Win Conditions
 
